@@ -852,5 +852,10 @@ for ( i = 0; i < cleanData.length; i++) {
 console.log(dataObjects[0])
 
 for (i = 0; i < dataObjects[0].values.length; i++) {
-    
+    tempSort = dataObjects.sort(function (a, b) { return b.values[i].value - a.values[i].value });
+    for (j = 0; j < tempSort.length; j++) {
+        tempSort[j].values[i].rank = j;
+    }
 }
+
+console.log(dataObjects[0])
