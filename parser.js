@@ -781,6 +781,21 @@ testdata = {
     ]
 }
 
+
+// structure of data
+// data = [
+//     { 
+//         orgName: ,
+//         values: [
+//             {
+//                 date: ,
+//                 value: ,
+//                 rank:
+//             }
+//         ]
+//     }
+// ]
+
 cleanData = testdata.responses[0].aggregations[3].buckets;
 
 // sortedData = cleanData.sort(function (a, b) { return b[1].value - a[1].value });
@@ -809,8 +824,33 @@ for (i = 0 ; i < cleanData.length; i++) {
 }
 
 console.log("there are " + dataLabels.length + " labels");
-console.log(dataLabels);
+// console.log(dataLabels);
 console.log("there are " + dataRows.length + " rows and" + dataRows[0].length + " values in each row");
-console.log(dataRows);
+// console.log(dataRows);
 console.log("there are " + dataKeys.length + " keys");
-console.log(dataKeys);
+// console.log(dataKeys);
+
+
+dataObjects = [];
+for ( i = 0; i < cleanData.length; i++) {
+    singleOrg = {
+        orgName: cleanData[i].key,
+        values: []
+    }
+    bucket = cleanData[i][2].buckets
+    for (j = 0; j < bucket.length; j++) {
+        dataPoint = {
+            date: bucket[j].key,
+            value: bucket[j][1].value,
+            rank: null
+        }
+        singleOrg.values.push(dataPoint)
+    }
+    dataObjects.push(singleOrg);
+}
+
+console.log(dataObjects[0])
+
+for (i = 0; i < dataObjects[0].values.length; i++) {
+    
+}
