@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 
 <body>
-<script src="//d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
 <script>
 
     //This is the soccer one!  We can use at least some of it to start.
@@ -25,13 +25,15 @@
 
     ///////////////////////
     // Scales
-    // var x = d3.scaleBand()
+    var x = d3.scaleBand()
+        .domain([0,10])
+        .rangeRound([25, width - 15]);
     //     .domain(data.map(function (d) { return d['year']; }).reverse())
-    //     .rangeRound([25, width - 15]);
 
-    // var y = d3.scaleLinear()
+    var y = d3.scaleLinear()
     //     .domain([d3.min(data, function (d) { return d['position'] }), d3.max(data, function (d) { return d['position']; })])
-    //     .range([20, height - 30]);
+        .domain([0,10])
+        .range([20, height - 30]);
 
     // var size = d3.scaleLinear()
     //     .domain(d3.extent(data, function (d) { return d['goals_for']; }))
