@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 
+<body>
 <script src="//d3js.org/d3.v4.min.js"></script>
 <script>
 
@@ -70,9 +71,9 @@
 
     ///////////////////////
     // Lines
-    var clubs = d3.map(data, function (d) {
-        return d['club'];
-    }).keys();
+    // var clubs = d3.map(data, function (d) {
+    //     return d['club'];
+    // }).keys();
 
     // clubs.forEach(function (club) {
     //     var currData = data.filter(function (d) {
@@ -115,8 +116,8 @@
 
     ///////////////////////
     // Tooltips
-    var tooltip = d3.select("body").append("div")
-        .attr("class", "tooltip");
+    // var tooltip = d3.select("body").append("div")
+    //     .attr("class", "tooltip");
 
         // chart.selectAll("circle")
         //     .on("mouseover", function (d) {
@@ -155,6 +156,7 @@
         //     })
 
 </script>
+</body>
 
 <style>
     .click-active,
