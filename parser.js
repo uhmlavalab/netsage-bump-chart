@@ -781,7 +781,6 @@ testdata = {
     ]
 }
 
-
 // structure of data
 // data = [
 //     { 
@@ -798,39 +797,7 @@ testdata = {
 
 cleanData = testdata.responses[0].aggregations[3].buckets;
 
-// sortedData = cleanData.sort(function (a, b) { return b[1].value - a[1].value });
-
-// top_20 = sortedData.slice(0,20);
-
-
-dataRows = []
-dataLabels = []
-dataKeys = []
-
-console.log(cleanData[0][2].buckets[0][1].value)
-
-for (i = 0; i < cleanData[0][2].buckets.length; i++) {
-    dataKeys.push(cleanData[0][2].buckets[i].key);
-}
-
-for (i = 0 ; i < cleanData.length; i++) {
-    dataLabels.push(cleanData[i].key);
-    row = []
-    bucket = cleanData[i][2].buckets
-        for (j = 0; j < bucket.length; j++) {
-            row.push(bucket[j][1].value);
-        }
-        dataRows.push(row);   
-}
-
-console.log("there are " + dataLabels.length + " labels");
-// console.log(dataLabels);
-console.log("there are " + dataRows.length + " rows and" + dataRows[0].length + " values in each row");
-// console.log(dataRows);
-console.log("there are " + dataKeys.length + " keys");
-// console.log(dataKeys);
-
-
+// put data in object
 dataObjects = [];
 for ( i = 0; i < cleanData.length; i++) {
     singleOrg = {
@@ -851,6 +818,7 @@ for ( i = 0; i < cleanData.length; i++) {
 
 console.log(dataObjects[0])
 
+// add rankings to data
 for (i = 0; i < dataObjects[0].values.length; i++) {
     tempSort = dataObjects.sort(function (a, b) { return b.values[i].value - a.values[i].value });
     for (j = 0; j < tempSort.length; j++) {
@@ -859,3 +827,36 @@ for (i = 0; i < dataObjects[0].values.length; i++) {
 }
 
 console.log(dataObjects[0])
+
+
+
+// don't need this anymore, but saving just in case
+// sortedData = cleanData.sort(function (a, b) { return b[1].value - a[1].value });
+// top_20 = sortedData.slice(0,20);
+
+// dataRows = []
+// dataLabels = []
+// dataKeys = []
+
+// console.log(cleanData[0][2].buckets[0][1].value)
+
+// for (i = 0; i < cleanData[0][2].buckets.length; i++) {
+//     dataKeys.push(cleanData[0][2].buckets[i].key);
+// }
+
+// for (i = 0 ; i < cleanData.length; i++) {
+//     dataLabels.push(cleanData[i].key);
+//     row = []
+//     bucket = cleanData[i][2].buckets
+//         for (j = 0; j < bucket.length; j++) {
+//             row.push(bucket[j][1].value);
+//         }
+//         dataRows.push(row);   
+// }
+
+// console.log("there are " + dataLabels.length + " labels");
+// // console.log(dataLabels);
+// console.log("there are " + dataRows.length + " rows and" + dataRows[0].length + " values in each row");
+// // console.log(dataRows);
+// console.log("there are " + dataKeys.length + " keys");
+// // console.log(dataKeys);
