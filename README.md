@@ -1,1 +1,0 @@
-# netsage-bump-chart
