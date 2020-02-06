@@ -1829,48 +1829,48 @@ for (i in parsed_data) {
         .attr("d", d3.line()
             .x(function (d) { return x(d.date) })
             .y(function (d) { return y(d.rank) }))
-        // .on("mouseover", function (d) {
-        //     console.log(this);
-        //     if (d3.select(this).style("opacity") != 0) {
-        //         div.transition()
-        //             .duration(200)
-        //             .style("opacity", .9)
-        //     };
-        //     div.transition()
-        //         .duration(200)
-        //         .style("opacity", .9);
-        //     div.html(() => {
-        //         var value = d[0].value;
-        //         value = value / 8000
-        //         if (value < 1000) {
-        //             return value.toFixed(1) + "KB";
-        //         } else {
-        //             value = value / 1000;
-        //             if (value < 1000) {
-        //                 return value.toFixed(1) + "MB"
-        //             } else {
-        //                 value = value / 1000;
-        //                 if (value < 1000) {
-        //                     return value.toFixed(1) + "GB"
-        //                 } else {
-        //                     value = value / 1000;
-        //                     return value.toFixed(1) + "TB"
-        //                 }
-        //             }
-        //         }
-        //     })
-        //         .style("left", (d3.event.pageX) + "px")
-        //         .style("top", (d3.event.pageY - 28) + "px")
-        // })
-        // .on("mouseout", function () {
-        //     div.transition()
-        //         .duration(500)
-        //         .style("opacity", 0);
-        //     d3.select(this).attr("stroke", () => {
-        //         var color = d[0].color;
-        //         return color;
-        //     })
-        // })
+        .on("mouseover", function (d) {
+            d3.select(this).attr("stroke", () => {
+                var hover_color = d[0].color;
+                var index = hover_color.lastIndexOf(",");
+                hover_color = hover_color.substring(0, index) + ", 1.0)"
+                console.log("hover color: " + hover_color);
+                return hover_color;
+            })
+            div.transition()
+                .duration(200)
+                .style("opacity", .9);
+            div.html(() => {
+                var value = d[0].value;
+                value = value / 8000
+                if (value < 1000) {
+                    return value.toFixed(1) + "KB";
+                } else {
+                    value = value / 1000;
+                    if (value < 1000) {
+                        return value.toFixed(1) + "MB"
+                    } else {
+                        value = value / 1000;
+                        if (value < 1000) {
+                            return value.toFixed(1) + "GB"
+                        } else {
+                            value = value / 1000;
+                            return value.toFixed(1) + "TB"
+                        }
+                    }
+                }
+            })
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px")
+        })
+        .on("mouseout", function (d) {
+            div.transition()
+                .duration(500)
+                .style("opacity", 0);
+            d3.select(this).attr("stroke", () => {
+                return d[0].color;
+            })
+        })
     ///////////////////////
     // Nodes
     var node = svg.append("g")
