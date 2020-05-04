@@ -120,6 +120,13 @@
 
         chart.selectAll("circle")
             .on("mouseover", function (d) {
+                d3.select(this).attr("stroke", () => {
+                    var hover_color = d[0].color;
+                    var index = hover_color.lastIndexOf(",");
+                    hover_color = hover_color.substring(0, index) + ", 1.0)"
+                    console.log("hover color: " + hover_color);
+                    return hover_color;
+                })
                 chart.selectAll('.' + d['class'])
                     .classed('active', true);
 
