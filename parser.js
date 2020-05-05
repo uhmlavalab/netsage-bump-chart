@@ -1667,6 +1667,7 @@ let parsed_data = []
 
 console.log(data)
 
+// extract raw data by org
 for (i in data.buckets) {
     org = data.buckets[i].key;
     parsed_data[i] = {"org": org, "data": []};
@@ -1680,7 +1681,7 @@ for (i in data.buckets) {
 
 console.log(parsed_data)
 
-
+// assign ranks to data
 for (i in parsed_data[0].data) {
     let temp_array = []
     for (j in parsed_data) {
@@ -1695,28 +1696,10 @@ for (i in parsed_data[0].data) {
 console.log("new data")
 console.log(parsed_data)
 
-
-/////////////////////////////////////Make the Viz/////////////////////////////////////////////////////////////
-
-// set the dimensions and margins of the graph
-var margin = { top: 50, right: 200, bottom: 50, left: 200 },
-    width = 1500 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
-
-// append the svg object to the body of the page
-var svg = d3.select("#chart-area")
-    .append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform",
-        "translate(" + margin.left + "," + margin.top + ")");
-
-
-let colorPal = ["rgba(223, 79, 79, 0.5)", 
-    "rgba(88, 223, 79, 0.5)", 
-    "rgba(79, 145, 223, 0.5)", 
-    "rgba(223, 79, 168, 0.5)", 
+let colorPal = ["rgba(223, 79, 79, 0.5)",
+    "rgba(88, 223, 79, 0.5)",
+    "rgba(79, 145, 223, 0.5)",
+    "rgba(223, 79, 168, 0.5)",
     "rgba(223, 155, 79, 0.5)",
     "rgba(79, 223, 192, 0.5)",
     "rgba(138, 79, 223, 0.5)",
@@ -1728,11 +1711,42 @@ let colorPal = ["rgba(223, 79, 79, 0.5)",
     "rgba(147, 78, 50, 0.5)",
     "rgba(50, 81, 147, 0.5)"]
 
-// add colors to data
+// add color and org to first data point, just org to last data point
 
 for (i in parsed_data) {
+    parsed_data[i].data[0].org = parsed_data[i].org
+    parsed_data[i].data[parsed_data[i].data.length - 1].org = parsed_data[i].org
     parsed_data[i].data[0].color = colorPal[i % colorPal.length]
 }
+
+// Starting pos = parsed_data[i].org
+// Find final positions
+let final_positions = [];
+for (i in parsed_data) {
+    let last = parsed_data[i].data[parsed_data[i].data.length - 1];
+    final_positions[i] = {org: last.org,
+                        rank: last.rank}
+}
+final_positions.sort((a, b) => { return a.rank - b.rank })
+
+
+
+/////////////////////////////////////Make the Viz/////////////////////////////////////////////////////////////
+
+// set the dimensions and margins of the graph
+var margin = { top: 50, right: 200, bottom: 50, left: 100, spacer: 25 },
+    width = 1500 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#chart-area")
+    .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom + margin.spacer)
+    .append("g")
+    .attr("height", height)
+    .attr("transform",
+        "translate(" + margin.left + "," + margin.top + ")");
 
 // function to wrap text!
 function wrap(text, width) {
@@ -1778,31 +1792,39 @@ var x = d3.scaleTime()
     .range([0, width])
 
 
-// Add Y axis
+// Add Y scale
 var y = d3.scaleLinear()
     .domain(dataYrange)
     .range([0, height])
 
-var leftAxis = d3.axisLeft(y)
+// var leftAxis = d3.axisLeft(y)
+//     .tickSize(5)
+//     .tickFormat((d) => {
+//         return parsed_data[d].org
+//     })
+
+// Add axes
+var rightAxis = d3.axisRight(y)
     .tickSize(5)
     .tickFormat((d) => {
-        return parsed_data[d].org
+        return final_positions[d].org
     })
 
 var bottomAxis = d3.axisBottom(x)
     .tickSize(5)
     .tickFormat(dateFormat)
 
-svg.append("g").call(leftAxis)
+svg.append("g").call(rightAxis)
     .attr("margin", 10)
+    .attr("transform", "translate(" + width + "," + margin.spacer + ")")
     .selectAll(".tick text")
-    .call(wrap, margin.left - 25)
-    .attr("transform", "translate(" + -10 + ",0)")
+    .call(wrap, margin.right - 25)
+    .attr("transform", "translate(" + 10 + ",0)")
 
 svg.append("g")
     .call(bottomAxis)
     .attr("class", "axis")
-    .attr("transform", "translate(0," + -(margin.top/2) + ")")
+    .attr("transform", "translate(0," + (height + margin.spacer + margin.bottom/2) + ")")
     .selectAll(".tick text")
     .call(wrap, 100)
     
@@ -1821,11 +1843,16 @@ var div = d3.select("body").append("div")
 // Add the lines
 for (i in parsed_data) {
 
-    svg.append("path")
+    svg.append("svg")
+        .attr("width", width)
+        .attr("height", height + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(0," + margin.spacer + ")")
+        .append("path")
         .datum(parsed_data[i].data)
         .attr("fill", "none")
         .attr("stroke", colorPal[i % colorPal.length])
-        .attr("stroke-width", 5)
+        .attr("stroke-width", 7)
         .attr("d", d3.line()
             .x(function (d) { return x(d.date) })
             .y(function (d) { return y(d.rank) }))
@@ -1841,24 +1868,26 @@ for (i in parsed_data) {
                 .duration(200)
                 .style("opacity", .9);
             div.html(() => {
-                var value = d[0].value;
-                value = value / 8000
-                if (value < 1000) {
-                    return value.toFixed(1) + "KB";
-                } else {
-                    value = value / 1000;
-                    if (value < 1000) {
-                        return value.toFixed(1) + "MB"
-                    } else {
-                        value = value / 1000;
-                        if (value < 1000) {
-                            return value.toFixed(1) + "GB"
-                        } else {
-                            value = value / 1000;
-                            return value.toFixed(1) + "TB"
-                        }
-                    }
-                }
+                // var value = d[0].value;
+                // value = value / 8000
+                // if (value < 1000) {
+                //     return value.toFixed(1) + "KB";
+                // } else {
+                //     value = value / 1000;
+                //     if (value < 1000) {
+                //         return value.toFixed(1) + "MB"
+                //     } else {
+                //         value = value / 1000;
+                //         if (value < 1000) {
+                //             return value.toFixed(1) + "GB"
+                //         } else {
+                //             value = value / 1000;
+                //             return value.toFixed(1) + "TB"
+                //         }
+                //     }
+                // }
+                var text = "<p><b>Organization:</b> " + d[0].org;
+                return text;
             })
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px")
@@ -1873,7 +1902,11 @@ for (i in parsed_data) {
         })
     ///////////////////////
     // Nodes
-    var node = svg.append("g")
+    var node = svg.append("svg")
+        .attr("width", width + 10)
+        .attr("height", height + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(0," + margin.spacer + ")")
         .selectAll("circle")
         .data(parsed_data[i].data)
         .enter().append("circle")
