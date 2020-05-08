@@ -1734,7 +1734,7 @@ final_positions.sort((a, b) => { return a.rank - b.rank })
 /////////////////////////////////////Make the Viz/////////////////////////////////////////////////////////////
 
 // set the dimensions and margins of the graph
-var margin = { top: 50, right: 200, bottom: 50, left: 100, spacer: 25 },
+var margin = { top: 50, right: 250, bottom: 50, left: 100, spacer: 25 },
     width = 1500 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -1868,25 +1868,7 @@ for (i in parsed_data) {
                 .duration(200)
                 .style("opacity", .9);
             div.html(() => {
-                // var value = d[0].value;
-                // value = value / 8000
-                // if (value < 1000) {
-                //     return value.toFixed(1) + "KB";
-                // } else {
-                //     value = value / 1000;
-                //     if (value < 1000) {
-                //         return value.toFixed(1) + "MB"
-                //     } else {
-                //         value = value / 1000;
-                //         if (value < 1000) {
-                //             return value.toFixed(1) + "GB"
-                //         } else {
-                //             value = value / 1000;
-                //             return value.toFixed(1) + "TB"
-                //         }
-                //     }
-                // }
-                var text = "<p><b>Organization:</b> " + d[0].org;
+                var text = "<p><b>Organization:</b></p>" + d[0].org;
                 return text;
             })
                 .style("left", (d3.event.pageX) + "px")
