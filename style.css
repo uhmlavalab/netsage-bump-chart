@@ -4,7 +4,7 @@ div.tooltip {
     color: black;			
     width: 250px;					
     height: auto;					
-    padding: 0px 10px 5px;				
+    padding: 0px 10px 10px;				
     font: 14px sans-serif;		
     background: #dde4ed;	
     border: 5px solid white;		
@@ -19,7 +19,7 @@ div.tooltip {
 }
 
 .tick {
-    width: 200px;
+    width: 250px;
     word-wrap: break-word;
     padding: 10px;
 }
@@ -27,7 +27,7 @@ div.tooltip {
 .tick text {
     word-wrap: break-word;
     padding: 0;
-    font-size: 14px;
+    font-size: 12px;
 }
 
 #chart-area{
