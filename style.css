@@ -2,9 +2,9 @@ div.tooltip {
     position: absolute;			
     text-align: left;
     color: black;			
-    width: 250px;					
+    width: 200px;					
     height: auto;					
-    padding: 0px 10px 10px;				
+    padding: 5px 10px;				
     font: 14px sans-serif;		
     background: #dde4ed;	
     border: 5px solid white;		
@@ -13,9 +13,9 @@ div.tooltip {
 }
 
 .header-text {
-    font-weight: bold;
     text-align: center;
-    font-size: 14px;
+    font: 15px sans-serif;
+    font-weight: bold;
 }
 
 .tick {

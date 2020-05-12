@@ -1391,12 +1391,14 @@ let colorPal = ["rgba(223, 79, 79, 0.5)",
     "rgba(147, 78, 50, 0.5)",
     "rgba(50, 81, 147, 0.5)"]
 
-// add color and org to first data point, just org to last data point
+// add color and org to data points
 
 for (i in parsed_data) {
-    parsed_data[i].data[0].org = parsed_data[i].org
-    parsed_data[i].data[parsed_data[i].data.length - 1].org = parsed_data[i].org
-    parsed_data[i].data[0].color = colorPal[i % colorPal.length]
+    for (j in parsed_data[i].data) {
+        parsed_data[i].data[j].org = parsed_data[i].org
+        parsed_data[i].data[j].color = colorPal[i % colorPal.length]
+    }
+    
 }
 
 // Starting pos = parsed_data[i].org
@@ -1521,10 +1523,20 @@ svg.append("g")
 //     .domain([top_10_pairs[top_10_pairs.length - 1][2], top_10_pairs[0][2]])
 //     .range([1, 10])
 
+// Add axis labels... replace with variable after in Grafana
+svg.append("text")
+    .attr("class", "header-text")
+    .attr("transform",
+        "translate(" + (width + margin.left) + " ," +
+        (margin.top /4) + ")")
+    .style("text-anchor", "start")
+    .text("Source Organization");
+
+
+// For lines tooltip
 var div = d3.select("body").append("div")
     .attr("class", "tooltip")
     .style("opacity", 0);
-
 
 // Add the lines
 for (i in parsed_data) {
@@ -1534,13 +1546,15 @@ for (i in parsed_data) {
         .append("g")
         .attr("transform", "translate(0," + margin.top + ")")
         .append("path")
+        .attr("class", "org-" + i)
         .datum(parsed_data[i].data)
         .attr("fill", "none")
         .attr("stroke", colorPal[i % colorPal.length])
         .attr("stroke-width", 7)
-        .attr("d", d3.line()
+        .attr("d", d3.line().curve(d3.curveMonotoneX)
             .x(function (d) { return x(d.date) })
             .y(function (d) { return y(d.rank) }))
+        // Add Tootip and hover settings
         .on("mouseover", function (d) {
             d3.select(this).attr("stroke", () => {
                 var hover_color = d[0].color;
@@ -1553,7 +1567,7 @@ for (i in parsed_data) {
                 .duration(200)
                 .style("opacity", .9);
             div.html(() => {
-                var text = "<p><b>Organization:</b></p>" + d[0].org;
+                var text = "<b>" + d[0].org + "</b>";
                 return text;
             })
                 .style("left", (d3.event.pageX) + "px")
@@ -1577,30 +1591,62 @@ for (i in parsed_data) {
         .selectAll("circle")
         .data(parsed_data[i].data)
         .enter().append("circle")
-        .attr("class", "point")
+        .attr("class", "org-" + i)
         .attr("cx", function (d) { return x(d.date); })
         .attr("cy", function (d) { return y(d.rank); })
         .attr('fill', colorPal[i % colorPal.length])
-        // .attr("class", function (d) { return d['club'].toLowerCase().replace(/ /g, '-').replace(/\./g, '') })
-        .attr("r", 8)
-        //.attr("r", function(d) { return size(d['goals_for']) })
+        .attr("r", 10)
+        .attr('stroke', colorPal[i % colorPal.length])
         .attr("stroke-width", 1.5)
-        .attr('opacity', '0.6');
 }
 
 
 
 ///////////////////////
-// Tooltips
-// var tooltip = d3.select("body").append("div")
-//     .attr("class", "tooltip");
+// point Tooltips
+var tooltip = d3.select("body").append("div")
+    .attr("class", "small-tooltip");
 
-// svg.selectAll("circle")
-//     .on("mouseover", function (d) {
-//         chart.selectAll('.' + d['class'])
-//             .classed('active', true);
+svg.selectAll("circle")
+    .on("mouseover", function (d) {
+        // Darken circle
+        d3.select(this).attr("fill", () => {
+            var hover_color = d.color;
+            var index = hover_color.lastIndexOf(",");
+            hover_color = hover_color.substring(0, index) + ", 1.0)"
+            return hover_color;
+        })
+        // Darken Line
+        d3.selectAll('.org-' + d.orig_index).attr("stroke", () => {
+            var hover_color = d.color;
+            var index = hover_color.lastIndexOf(",");
+            hover_color = hover_color.substring(0, index) + ", 1.0)"
+            return hover_color;
+        })
+        div.transition()
+            .duration(200)
+            .style("opacity", .9);
+        div.html(() => {
+            var rank = d.rank + 1
+            var text = "<b>" + rank + ": </b>" + d.org;
+            return text;
+        })
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px")
+    })
+    .on("mouseout", function (d) {
+        div.transition()
+            .duration(500)
+            .style("opacity", 0);
+        d3.select(this).attr("fill", () => {
+            return d.color;
+        })
+        d3.selectAll('.org-' + d.orig_index).attr("stroke", () => {
+                return d.color;
+        })
+    })
 
-//         var tooltip_str = "Club: " + d['club'] +
+//        var tooltip_str = "Club: " + d['club'] +
 //             "<br/>" + "Year: " + d['year'] +
 //             "<br/>" + "Points: " + d['points'] +
 //             "<br/>" + "W/L/T: " + d['wins'] + " / " + d['losses'] + " / " + d['ties'] +
@@ -1612,7 +1658,6 @@ for (i in parsed_data) {
 
 //         tooltip.html(tooltip_str)
 //             .style("visibility", "visible");
-//     })
 //     .on("mousemove", function (d) {
 //         tooltip.style("top", event.pageY - (tooltip.node().clientHeight + 5) + "px")
 //             .style("left", event.pageX - (tooltip.node().clientWidth / 2.0) + "px");
